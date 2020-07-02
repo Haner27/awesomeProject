@@ -1,0 +1,83 @@
+syntax = "proto3";
+option go_package = "user";
+package proto.user;
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+
+// 枚举值
+enum Gender {
+  MALE = 0;  // 第一个枚举值，这里的数字必须是0，不然编译不通过
+  FEMALE = 1;
+}
+
+enum PowerLevel {
+  option allow_alias = true;  // 允许枚举常量定义别名
+  WEAKNESS = 0;
+  NORMAL = 1;
+  STRONG = 2;
+  VERY_STRONG = 2;
+}
+
+// 消息
+message Hobby {
+  int32 id = 1;
+  string name = 2;
+}
+
+message CourseScore {
+  int32 id = 1;
+  string name = 2;
+  int32 score = 3;
+}
+
+message User {
+  int32 id = 1;
+  string name = 2;  // 用户姓名
+  int32 age = 3;  // 用户年龄
+  Gender gender = 4;
+  PowerLevel power = 5;
+  repeated Hobby hobbies = 6;  // repeated 数组形式，repeated字段使用packed编码
+  repeated string foods = 7;
+  map<string, CourseScore> score = 8;  // map
+  google.protobuf.Timestamp last_updated = 9;
+  reserved 20, 27, 30 to 35;  // 有时候你需要保留一些你以后要用到的编号或者变量名，使用reserved关键字
+  reserved "friends", "loves";
+}
+
+message Response {
+  bool success = 1;
+  string msg = 2;
+  google.protobuf.Any data = 3;
+}
+
+message ResponseArray {
+  bool success = 1;
+  string msg = 2;
+  repeated google.protobuf.Any data = 3;
+}
+
+message GetUserByIdRequest {
+  int32 user_id = 1;
+}
+
+message UpdateUserRequest {
+  int32 user_id = 1;
+  string name = 2;
+  int32 age = 3;
+  Gender gender = 4;
+  PowerLevel power = 5;
+}
+
+message GetUsersRequest {
+  string name = 1;  // 用户姓名
+  int32 age = 2;  // 用户年龄
+  Gender gender = 3;
+  PowerLevel power = 4;
+}
+
+service UserService {
+  rpc CreateUser(User) returns (Response);
+  rpc GetUserById(GetUserByIdRequest) returns (Response);
+  rpc GetUsers(GetUsersRequest) returns (ResponseArray);
+  rpc UpdateUser(UpdateUserRequest) returns (Response);
+}

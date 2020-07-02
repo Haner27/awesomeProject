@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option go_package = "calculate";
+
+package calculate;
+
+service Calculate {
+  rpc Add (CalRequest) returns (CalReply) {}
+  rpc Sub (CalRequest) returns (CalReply) {}
+  rpc Mul (CalRequest) returns (CalReply) {}
+  rpc Div (CalRequest) returns (CalReply) {}
+}
+
+// The request message containing the user's name.
+message CalRequest {
+  int64 x = 1;
+  int64 y = 2;
+}
+
+// The response message containing the greetings
+message CalReply {
+  int64 r = 1;
+}
