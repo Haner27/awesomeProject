@@ -27,6 +27,7 @@ var (
 
 func init() {
 	zipKinReporter = utils.InitTracer(conf.ZipKinHostPort, conf.ZipTag, serverAddress) // 初始化zipKin
+	iniLogger()
 	initOptions()
 	initPlugins()
 	initServices()
@@ -50,6 +51,10 @@ Options:
 		flag.PrintDefaults()
 	}
 	serverAddress = fmt.Sprintf("%s:%d", utils.CurrentIp, port)
+}
+
+func iniLogger() {
+	// 初始化logger
 }
 
 func initPlugins() {

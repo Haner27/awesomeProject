@@ -14,7 +14,7 @@ func NewEtcdRegistryPlugin(serviceAddress, serviceBasePath string, etcdUrls []st
 		EtcdServers:    etcdUrls,
 		BasePath:       serviceBasePath,
 		Metrics:        metrics.NewRegistry(),
-		UpdateInterval: time.Second * 10,
+		UpdateInterval: time.Minute,
 	}
 	err := r.Start()
 	if err != nil {

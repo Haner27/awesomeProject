@@ -17,12 +17,14 @@ func main() {
 	defer xClient.Close()
 
 	client := helloWorld.NewGreeterClient(xClient)
-	args := &helloWorld.HelloRequest{
-		Name: "rpcx",
+	for i:=0;i<10;i++ {
+		args := &helloWorld.HelloRequest{
+			Name: "rpcx",
+		}
+		reply, err := client.SayHello(context.Background(), args)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("reply: ", reply.Message)
 	}
-	reply, err := client.SayHello(context.Background(), args)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("reply: ", reply.Message)
 }
