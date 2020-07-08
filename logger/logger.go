@@ -12,11 +12,7 @@ type Logger struct {
 	*zap.SugaredLogger
 }
 
-func NewLogger(name string) *Logger {
-	core := zapcore.NewTee(
-		zapcore.NewCore(CommonConsoleEncoder, StdoutSyncEr, CommonLevelEnable),
-		zapcore.NewCore(ErrorJsonEncoder, StdoutSyncEr, ErrorLevelEnable),
-	)
+func NewLogger(name string, core zapcore.Core) *Logger {
 	zapLogger = zap.New(
 		core,
 		//zap.AddCaller(),
@@ -34,6 +30,6 @@ func (l *Logger) Close() {
 	zapLogger.Sync()
 }
 
-func InitLogger(name string) {
-	Log = NewLogger(name)
+func InitLogger(name string, core zapcore.Core) {
+	Log = NewLogger(name, core)
 }

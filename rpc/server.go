@@ -26,7 +26,7 @@ func NewRpcServer(address string) *Server {
 }
 
 func (rs *Server) RegisterServices(serviceInfos *[]ServiceInfo) {
-	logger.Log.Info("SERVICES:")
+	logger.Log.Info("【SERVICES】")
 	for _, serviceInfo := range *serviceInfos {
 		err := rs.Server.RegisterName(serviceInfo.ServerName, serviceInfo.Handler, serviceInfo.Metadata)
 		if err != nil {
@@ -39,7 +39,7 @@ func (rs *Server) RegisterServices(serviceInfos *[]ServiceInfo) {
 
 func (rs *Server) AddPlugins(plugins []server.Plugin) {
 	// 添加插件
-	logger.Log.Info("PLUGINS:")
+	logger.Log.Info("【PLUGINS】")
 	for _, plugin := range plugins {
 		t := reflect.TypeOf(plugin)
 		rs.Server.Plugins.Add(plugin)
@@ -49,8 +49,7 @@ func (rs *Server) AddPlugins(plugins []server.Plugin) {
 
 func (rs *Server) Start() {
 	// 启动服务
-	logger.Log.Info("STARTING SERVER:")
-	logger.Log.Infow(rs.Address)
+	logger.Log.Infow("【STARTING SERVER】", "serverAddress", rs.Address)
 	err := rs.Server.Serve("tcp", rs.Address)
 	if err != nil {
 		logger.Log.Error("Server start failed.")

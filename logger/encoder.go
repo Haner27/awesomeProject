@@ -11,7 +11,7 @@ var ErrorEncoderConfig = zapcore.EncoderConfig{
 	NameKey:        "logger",
 	CallerKey:      "caller",
 	MessageKey:     "errMsg",
-	StacktraceKey:  "stacktrace",
+	StacktraceKey:  "errTrace",
 	LineEnding:     zapcore.DefaultLineEnding,
 	EncodeLevel:    zapcore.LowercaseLevelEncoder,
 	EncodeTime:     zapcore.ISO8601TimeEncoder,

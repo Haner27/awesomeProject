@@ -2,6 +2,7 @@ package main
 
 import (
 	"awesomeProject/conf"
+	"awesomeProject/dao/es"
 	"awesomeProject/logger"
 	p "awesomeProject/plugins"
 	"awesomeProject/rpc"
@@ -11,6 +12,7 @@ import (
 	"fmt"
 	"github.com/openzipkin/zipkin-go/reporter"
 	"github.com/smallnest/rpcx/server"
+	"go.uber.org/zap/zapcore"
 	"os"
 	"time"
 )
@@ -30,6 +32,7 @@ var (
 func init() {
 	zipKinReporter = utils.InitTracer(conf.ZipKinHostPort, conf.ZipTag, serverAddress) // 初始化zipKin
 	initOptions()
+	initDao()
 	iniLogger()
 	initPlugins()
 	initServices()
@@ -59,7 +62,17 @@ Options:
 
 func iniLogger() {
 	// 初始化logger
-	logger.InitLogger(conf.ProjectName)
+	core := zapcore.NewTee(
+		zapcore.NewCore(logger.CommonConsoleEncoder, logger.StdoutSyncEr, logger.CommonLevelEnable),
+		zapcore.NewCore(logger.ErrorJsonEncoder, logger.StdoutSyncEr, logger.ErrorLevelEnable),
+		zapcore.NewCore(logger.ErrorJsonEncoder, logger.NewElasticSearchSyncEr(es.EsClient), logger.ErrorLevelEnable),
+	)
+	logger.InitLogger(conf.ProjectName, core)
+}
+
+func initDao() {
+	// 初始化数据访问对象
+	es.InitEsDao(conf.EsUrls)  // 初始化es client
 }
 
 func initPlugins() {
@@ -91,6 +104,7 @@ func main() {
 	if help {
 		flag.Usage()
 	} else {
+		logger.Log.Error("1")
 		rpcServer := rpc.NewRpcServer(serverAddress) // 初始化RPC服务
 		rpcServer.Server.AuthFunc = p.AuthFunc       // 认证插件
 		rpcServer.AddPlugins(plugins)                // 添加插件

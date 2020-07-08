@@ -1,6 +1,7 @@
 package conf
 
 var ProjectName = "awesomeProject"
+var EsUrls = []string{"127.0.0.1:9200"}
 var EtcdUrls = []string{"127.0.0.1:2379"}
 var ServiceBasePath = "/Services"
 var ZipTag = "GreeterService"
