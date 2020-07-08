@@ -1,11 +1,14 @@
 package logger
 
 import (
+	"context"
 	"fmt"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/olivere/elastic.v5"
+	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	"os"
+	"time"
 )
 
 var DevNullSyncEr = zapcore.AddSync(ioutil.Discard)
@@ -28,11 +31,8 @@ func NewElasticSearchSyncEr(esClient *elastic.Client) zapcore.WriteSyncer {
 }
 
 func(es *ElasticSearchSyncEr) Write(p []byte) (n int, err error) {
-	fmt.Println("Write")
-	return 0, nil
-}
-
-func(es *ElasticSearchSyncEr) Sync() error {
-	fmt.Println("Sync")
-	return nil
+	logIndexName := fmt.Sprintf("log-%s", time.Now().Format("20060102"))
+	logID := bson.NewObjectId().Hex()
+	_, err = es.esClient.Index().Index(logIndexName).Type("main").Id(logID).BodyString(string(p)).Do(context.Background())
+	return 0, err
 }

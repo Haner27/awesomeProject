@@ -104,7 +104,7 @@ func main() {
 	if help {
 		flag.Usage()
 	} else {
-		logger.Log.Error("1")
+		logger.Log.Errorw("test error", "projectName", "awesomeProject", "serverAddress", serverAddress)
 		rpcServer := rpc.NewRpcServer(serverAddress) // 初始化RPC服务
 		rpcServer.Server.AuthFunc = p.AuthFunc       // 认证插件
 		rpcServer.AddPlugins(plugins)                // 添加插件

@@ -11,5 +11,6 @@ require (
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0
 	github.com/smallnest/rpcx v0.0.0-20200630102206-6d45e4122333
 	go.uber.org/zap v1.10.0
+	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/olivere/elastic.v5 v5.0.85
 )
