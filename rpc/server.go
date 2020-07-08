@@ -1,8 +1,8 @@
 package rpc
 
 import (
+	"awesomeProject/logger"
 	"github.com/smallnest/rpcx/server"
-	"log"
 	"reflect"
 )
 
@@ -26,33 +26,33 @@ func NewRpcServer(address string) *Server {
 }
 
 func (rs *Server) RegisterServices(serviceInfos *[]ServiceInfo) {
-	log.Print("[services]:\n")
+	logger.Log.Info("SERVICES:")
 	for _, serviceInfo := range *serviceInfos {
 		err := rs.Server.RegisterName(serviceInfo.ServerName, serviceInfo.Handler, serviceInfo.Metadata)
 		if err != nil {
-			log.Fatalf("Register %s service failed.", serviceInfo.ServerName)
+			logger.Log.Errorw("Registered a service failed.", "serviceName", serviceInfo.ServerName)
 		} else {
-			log.Printf("Register %s service.\n", serviceInfo.ServerName)
+			logger.Log.Infow("Registered a service.", "serviceName", serviceInfo.ServerName)
 		}
 	}
 }
 
 func (rs *Server) AddPlugins(plugins []server.Plugin) {
 	// 添加插件
-	log.Print("[plugins]:\n")
+	logger.Log.Info("PLUGINS:")
 	for _, plugin := range plugins {
 		t := reflect.TypeOf(plugin)
 		rs.Server.Plugins.Add(plugin)
-		log.Printf("Add %s plugin.", t.Elem().Name())
+		logger.Log.Infow("Added a plugin.", "pluginName", t.Elem().Name())
 	}
 }
 
 func (rs *Server) Start() {
 	// 启动服务
-	log.Println("[starting]:")
-	log.Println(rs.Address)
+	logger.Log.Info("STARTING SERVER:")
+	logger.Log.Infow(rs.Address)
 	err := rs.Server.Serve("tcp", rs.Address)
 	if err != nil {
-		log.Fatal("Server start failed.")
+		logger.Log.Error("Server start failed.")
 	}
 }

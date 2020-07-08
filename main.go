@@ -2,6 +2,7 @@ package main
 
 import (
 	"awesomeProject/conf"
+	"awesomeProject/logger"
 	p "awesomeProject/plugins"
 	"awesomeProject/rpc"
 	"awesomeProject/services"
@@ -19,6 +20,7 @@ const version = "1.0.0"
 var (
 	help           bool
 	port           int
+	stage          string
 	serverAddress  string
 	plugins        []server.Plugin
 	serviceInfos   []rpc.ServiceInfo
@@ -27,13 +29,14 @@ var (
 
 func init() {
 	zipKinReporter = utils.InitTracer(conf.ZipKinHostPort, conf.ZipTag, serverAddress) // 初始化zipKin
-	iniLogger()
 	initOptions()
+	iniLogger()
 	initPlugins()
 	initServices()
 }
 
 func done() {
+	logger.Log.Close()
 	zipKinReporter.Close()
 }
 
@@ -41,6 +44,7 @@ func initOptions() {
 	// 初始化选项
 	flag.BoolVar(&help, "h", false, "this help")
 	flag.IntVar(&port, "p", 9999, "rpc server port")
+	flag.StringVar(&stage, "s", "DEV", "rpc server port")
 	flag.Usage = func() {
 		fmt.Fprintf(
 			os.Stderr, `
@@ -55,6 +59,7 @@ Options:
 
 func iniLogger() {
 	// 初始化logger
+	logger.InitLogger(conf.ProjectName)
 }
 
 func initPlugins() {
