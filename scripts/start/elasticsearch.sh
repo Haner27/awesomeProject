@@ -1,2 +1,2 @@
 rm -rf /tmp/elasticsearch/data && mkdir -p /tmp/elasticsearch/data/log && \
-docker run -d -p 9200:9200 -p 9300:9300 -v /tmp/elasticsearch/data:/usr/share/elasticsearch/data -v /tmp/elasticsearch/data/log:/var/log/elasticsearch -e "discovery.type=single-node" --name elasticsearch elasticsearch:5.6.8
+docker run -d --rm -p 9200:9200 -p 9300:9300 -p 5601:5601 -v /tmp/elasticsearch/data:/usr/share/elasticsearch/data -v /tmp/elasticsearch/data/log:/var/log/elasticsearch -e "discovery.type=single-node" --name elasticsearch elasticsearch:5.6.8

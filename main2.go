@@ -5,7 +5,8 @@ import (
 	p "awesomeProject/plugins"
 	"awesomeProject/rpc"
 	"awesomeProject/services"
-	"awesomeProject/utils"
+	"awesomeProject/utils/iputil"
+	"awesomeProject/utils/zipkinutil"
 	"flag"
 	"fmt"
 	"github.com/openzipkin/zipkin-go/reporter"
@@ -26,7 +27,7 @@ var (
 )
 
 func init() {
-	zipKinReporter2 = utils.InitTracer(conf.ZipKinHostPort2, conf.ZipTag2, serverAddress2) // 初始化zipKin
+	zipKinReporter2 = zipkinutil.InitTracer(conf.ZipKinHostPort2, conf.ZipTag2, serverAddress2) // 初始化zipKin
 	initOptions2()
 	initPlugins2()
 	initServices2()
@@ -49,7 +50,7 @@ Options:
 		`, version2)
 		flag.PrintDefaults()
 	}
-	serverAddress2 = fmt.Sprintf("%s:%d", utils.CurrentIp, port2)
+	serverAddress2 = fmt.Sprintf("%s:%d", iputil.CurrentIp, port2)
 }
 
 func initPlugins2() {

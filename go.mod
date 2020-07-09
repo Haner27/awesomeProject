@@ -3,6 +3,7 @@ module awesomeProject
 go 1.14
 
 require (
+	github.com/Shopify/sarama v1.19.0
 	github.com/golang/protobuf v1.4.2
 	github.com/gorilla/mux v1.7.4 // indirect
 	github.com/opentracing/opentracing-go v1.1.0

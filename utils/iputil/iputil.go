@@ -1,4 +1,4 @@
-package utils
+package iputil
 
 import (
 	"fmt"

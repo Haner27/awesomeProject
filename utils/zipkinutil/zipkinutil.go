@@ -1,4 +1,4 @@
-package utils
+package zipkinutil
 
 import (
 	"github.com/opentracing/opentracing-go"

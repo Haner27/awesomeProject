@@ -4,12 +4,15 @@ import (
 	"awesomeProject/conf"
 	"awesomeProject/dao/es"
 	"awesomeProject/logger"
+	"awesomeProject/mq/kafka"
 	p "awesomeProject/plugins"
 	"awesomeProject/rpc"
 	"awesomeProject/services"
-	"awesomeProject/utils"
+	"awesomeProject/utils/iputil"
+	"awesomeProject/utils/zipkinutil"
 	"flag"
 	"fmt"
+	"github.com/Shopify/sarama"
 	"github.com/openzipkin/zipkin-go/reporter"
 	"github.com/smallnest/rpcx/server"
 	"go.uber.org/zap/zapcore"
@@ -30,9 +33,10 @@ var (
 )
 
 func init() {
-	zipKinReporter = utils.InitTracer(conf.ZipKinHostPort, conf.ZipTag, serverAddress) // 初始化zipKin
+	zipKinReporter = zipkinutil.InitTracer(conf.ZipKinHostPort, conf.ZipTag, serverAddress) // 初始化zipKin
 	initOptions()
 	initDao()
+	initMq()
 	iniLogger()
 	initPlugins()
 	initServices()
@@ -57,7 +61,7 @@ Options:
 		`, version)
 		flag.PrintDefaults()
 	}
-	serverAddress = fmt.Sprintf("%s:%d", utils.CurrentIp, port)
+	serverAddress = fmt.Sprintf("%s:%d", iputil.CurrentIp, port)
 }
 
 func iniLogger() {
@@ -66,6 +70,7 @@ func iniLogger() {
 		zapcore.NewCore(logger.CommonConsoleEncoder, logger.StdoutSyncEr, logger.CommonLevelEnable),
 		zapcore.NewCore(logger.ErrorJsonEncoder, logger.StdoutSyncEr, logger.ErrorLevelEnable),
 		zapcore.NewCore(logger.ErrorJsonEncoder, logger.NewElasticSearchSyncEr(es.EsClient), logger.ErrorLevelEnable),
+		zapcore.NewCore(logger.ErrorJsonEncoder, logger.NewKafkaSyncEr(kafka.Producer), logger.ErrorLevelEnable),
 	)
 	logger.InitLogger(conf.ProjectName, core)
 }
@@ -73,6 +78,25 @@ func iniLogger() {
 func initDao() {
 	// 初始化数据访问对象
 	es.InitEsDao(conf.EsUrls)  // 初始化es client
+}
+
+func initMq() {
+	// 生产者配置
+	kafkaConfig := sarama.NewConfig()
+	// 等待服务器所有副本都保存成功后的响应
+	kafkaConfig.Producer.RequiredAcks = sarama.WaitForAll
+	// 随机的分区类型：返回一个分区器，该分区器每次选择一个随机分区
+	kafkaConfig.Producer.Partitioner = sarama.NewReferenceHashPartitioner
+	// 是否等待成功和失败后的响应
+	kafkaConfig.Producer.Return.Successes = true
+	// buffer 每隔多少时间触发flush
+	kafkaConfig.Producer.Flush.Frequency = 5 * time.Second
+	// buffer 最多装多少条消息
+	kafkaConfig.Producer.Flush.MaxMessages = 10000
+	// buffer 装多少条消息触发flush
+	kafkaConfig.Producer.Flush.Messages = 200
+	// 初始化消息队列
+	kafka.InitProducer(conf.KafkaUrls, conf.KafkaTopic, kafkaConfig)
 }
 
 func initPlugins() {
@@ -104,7 +128,7 @@ func main() {
 	if help {
 		flag.Usage()
 	} else {
-		logger.Log.Errorw("test error", "projectName", "awesomeProject", "serverAddress", serverAddress)
+		logger.Log.Errorw("test error log", "name", "hannengfang", "age", 28)
 		rpcServer := rpc.NewRpcServer(serverAddress) // 初始化RPC服务
 		rpcServer.Server.AuthFunc = p.AuthFunc       // 认证插件
 		rpcServer.AddPlugins(plugins)                // 添加插件

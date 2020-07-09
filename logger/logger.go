@@ -8,6 +8,13 @@ import (
 var Log *Logger
 var zapLogger *zap.Logger
 
+func init() {
+	l, _ := zap.NewDevelopment()
+	Log = &Logger{
+		l.Sugar(),
+	}
+}
+
 type Logger struct {
 	*zap.SugaredLogger
 }

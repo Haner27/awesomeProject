@@ -3,7 +3,7 @@ docker run -d \
   -p 2379:2379 \
   -p 2380:2380 \
   --mount type=bind,source=/tmp/etcd-data.tmp,destination=/etcd-data \
-  --name etcd-gcr-v3.3.13 \
+  --name etcd \
   quay.io/coreos/etcd:v3.3.13 \
   /usr/local/bin/etcd \
   --name s1 \

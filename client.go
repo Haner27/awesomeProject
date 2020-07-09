@@ -4,13 +4,14 @@ import (
 	"awesomeProject/conf"
 	helloWorld "awesomeProject/proto/helloword"
 	"awesomeProject/rpc"
-	"awesomeProject/utils"
+	"awesomeProject/utils/iputil"
+	"awesomeProject/utils/zipkinutil"
 	"context"
 	"fmt"
 )
 
 func main() {
-	init := utils.InitTracer(conf.ZipKinHostPort, "third-client", utils.CurrentIp) // zipkin
+	init := zipkinutil.InitTracer(conf.ZipKinHostPort, "third-client", iputil.CurrentIp) // zipkin
 	defer init.Close()
 
 	xClient := rpc.NewXClient(conf.ServiceBasePath, "Greeter", conf.EtcdUrls)
