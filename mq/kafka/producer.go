@@ -26,6 +26,11 @@ func NewKafkaProducer(kafkaUrls []string, topic string, config *sarama.Config) (
 	if err != nil {
 		return nil, err
 	}
+
+	if err := NewTopic(kafkaUrls, topic, 3); err != nil {
+		fmt.Printf("NewKafkaProducer: %v\n", err)
+	}
+
 	kp := &KafkaProducer{asyncProducer, topic}
 
 	go func() {
@@ -34,10 +39,10 @@ func NewKafkaProducer(kafkaUrls []string, topic string, config *sarama.Config) (
 			case suc := <-kp.Successes():
 				fmt.Printf(
 					"send msg to kafka topic successfully. partition: %d, offset: %d, timestamp: %s\n",
-						suc.Partition,
-						suc.Offset,
-						suc.Timestamp.String(),
-					)
+					suc.Partition,
+					suc.Offset,
+					suc.Timestamp.String(),
+				)
 			case fail := <-kp.Errors():
 				fmt.Printf(
 					"send msg to kafka topic fail. error: %s",
